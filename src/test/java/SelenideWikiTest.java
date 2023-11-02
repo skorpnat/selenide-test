@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 
 
 import static com.codeborne.selenide.CollectionCondition.itemWithText;
+import static com.codeborne.selenide.CollectionCondition.texts;
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Selectors.byText;
 import static com.codeborne.selenide.Selenide.*;
@@ -27,9 +28,22 @@ public class SelenideWikiTest {
         $$x("//div[@data-testid='results-list']//a/span").first().click();
         $("#repository-container-header").shouldHave(text("selenide / selenide"));
         $("#wiki-tab").click();
-        $$("div.markdown-body ul li a").shouldHave(itemWithText("Soft assertions"));
-        $(byText("Soft assertions")).click();
-        $("#user-content-3-using-junit5-extend-test-class").shouldHave(text("3. Using JUnit5 extend test class:"));
+        $("#wiki-pages-box input").setValue("SoftAssertion");
+        $$(".wiki-rightbar ul").shouldHave(itemWithText("SoftAssertions"));
+        $$(".wiki-rightbar ul").first().$(byText("SoftAssertions")).click();
+
+        String textExample = String.join(
+                "\n"+ "@ExtendWith({SoftAssertsExtension.class})\n"
+                        + "class Tests {\n"
+                        + "@Test\n" + "void test() {\n"
+                        + "Configuration.assertionMode = SOFT;\n"
+                        + "open(\"page.html\");\n"
+                        +"\n"
+                        + "$(\"#first\").should(visible).click();\n"
+                        + "$(\"#second\").should(visible).click();\n"
+                        + "}\n"
+                        + "}"           );
+        $$("#user-content-3-using-junit5-extend-test-class").shouldHave(texts(textExample));
     }
 
     @AfterEach
